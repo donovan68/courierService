@@ -31,10 +31,10 @@ private:
     unsigned long _time;
     unsigned int _speed;
     bool _isRunning;
-    std::vector<DrawableObject*> _objects;
 #ifdef USE_GRAPHICS
     sf::RenderWindow *_window;
 #endif
+    Hub * _hub;
 };
 
 #endif // SIMULATION_H

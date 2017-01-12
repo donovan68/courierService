@@ -9,6 +9,12 @@ void Simulation::Init()
     _window->setFramerateLimit(30);
     DrawableObject::_window_s = _window;
 #endif
+    //Set map size//
+    DrawableObject::sizex = _sizex;
+    DrawableObject::sizey = _sizey;
+    //Generate Hub//
+    _hub = new Hub;
+    _hub->GenerateMap(8, 20,60);
 
 }
 void Simulation::Step()
@@ -21,7 +27,7 @@ void Simulation::Step()
     background.setFillColor(sf::Color(200, 200, 255));
     _window->clear();
     _window->draw(background);
-    for(vector<DrawableObject*>::iterator i = _objects.begin(); i < _objects.end(); ++i)
+    for(vector<DrawableObject*>::iterator i = DrawableObject::objects.begin(); i < DrawableObject::objects.end(); ++i)
     {
         (*i)->Draw();
     }

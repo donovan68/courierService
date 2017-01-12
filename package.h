@@ -28,6 +28,7 @@ class PackageContainer
 {
 public:
     using ConstIterator = std::vector<Package*>::const_iterator;
+
     void PutPackage(Package &p)
     {
         _packages.push_back(&p);
@@ -48,7 +49,7 @@ public:
     {
         return _packages.end();
     }
-private:
+protected:
     std::vector<Package*> _packages;
 };
 

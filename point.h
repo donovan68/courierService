@@ -25,6 +25,26 @@ public:
         y -= rhs.y;
         return *this;
     }
+    void Clip(Point limits)
+    {
+        if(x > limits.x)
+        {
+            x = x % limits.x;
+        }
+        else if(x < 0)
+        {
+            x = limits.x + x%limits.x;
+        }
+        if(y > limits.y)
+        {
+            y = y % limits.y;
+        }
+        else if(y < 0)
+        {
+            y = limits.y + y%limits.y;
+        }
+    }
+
     bool operator ==(const Point &other)
     {
         if (other.x == x && other.y == y)

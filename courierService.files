@@ -11,3 +11,4 @@ simulation.cpp
 vehicle.cpp
 assets.cpp
 drawing.cpp
+customer.cpp

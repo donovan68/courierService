@@ -5,7 +5,8 @@ using namespace std;
 
 int main(int argc, char *argv[])
 {
-    cout << "Hello Cruel World!" << endl;
+    //cout << (10 + -14 % 10) << endl;
+
     Simulation sim(600, 600);
     sim.Init();
     while(sim.IsRunning())
