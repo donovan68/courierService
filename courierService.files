@@ -5,3 +5,9 @@ package.h
 vehicle.h
 simulation.h
 drawing.h
+assets.h
+customer.h
+simulation.cpp
+vehicle.cpp
+assets.cpp
+drawing.cpp

@@ -1,4 +1,9 @@
+LIBS= -lsfml-graphics -lsfml-system -lsfml-window
+FLAGS= -std=c++11 -Wall -Werror -pedantic
+OBJECTS= main.cpp simulation.cpp drawing.cpp vehicle.cpp assets.cpp
 all:
-	g++ main.cpp -o simulation.out -O3 -Wall -Werror -pedantic 
+	mkdir ./bin -p
+	g++ $(OBJECTS) -o ./bin/simulation.out -O3  $(FLAGS) $(LIBS)
 debug:
-	g++ main.cpp -o simulation.out -O0 -g -Wall -Werror -pedantic 
+	mkdir ./bin -p
+	g++ $(OBJECTS) -o ./bin/simulation.out -O0 -g $(FLAGS) $(LIBS)
