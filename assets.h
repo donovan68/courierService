@@ -7,6 +7,7 @@
 #include "drawing.h"
 #include "customer.h"
 #include "point.h"
+#include "simtime.h"
 
 class Branch : public DrawableObject, public PackageContainer, public VehicleContainer
 {
@@ -15,8 +16,10 @@ public:
     Branch(int id):
         _id(id)
     {
-        _position.x = rand()%sizex;
-        _position.y = rand()%sizey;
+        _workStart = 7;
+        _workEnd = 16;
+        _position.x = rand() % sizex;
+        _position.y = rand() % sizey;
     }
     void Draw();
     void Step();
@@ -29,6 +32,13 @@ private:
         {
             _customers.push_back(new Customer(_position, _id));
         }
+        //Also add vehicles according to the customer count//
+        int count = _customers.size();
+        int vans = count / 15;
+        int trucks = count / 100;
+        int motors = count / 30;
+
+
     }
     const int _id;
     std::vector<Customer*> _customers;
@@ -38,8 +48,10 @@ class Hub : public DrawableObject, public PackageContainer, public VehicleContai
 public:
     Hub(int x, int y)
     {
-        _position.x = x%sizex;
-        _position.y = y%sizey;
+        _workStart = 16;
+        _workEnd = 5;
+        _position.x = x % sizex;
+        _position.y = y % sizey;
     }
     Hub()
     {

@@ -48,4 +48,23 @@ private:
     std::vector<Vehicle*> _vehicles;
 };
 
+class DistributionVehicle : public Vehicle
+{
+public:
+    void Distribute();
+};
+class Truck : public Vehicle
+{
+public:
+    Transit();
+};
+class Van : public DistributionVehicle
+{
+
+};
+class Scooter : public DistributionVehicle
+{
+
+};
+
 #endif // VEHICLE_H

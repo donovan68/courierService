@@ -1,10 +1,12 @@
 #ifndef SIMULATION_H
 #define SIMULATION_H
 #include <vector>
+#include <sstream>
+#include <iostream>
 #include "drawing.h"
 #include "vehicle.h"
 #include "assets.h"
-
+#include "simtime.h"
 class Simulation
 {
 public:
@@ -12,7 +14,7 @@ public:
         _sizex(x),
         _sizey(y),
         _time(0),
-        _speed(1),
+        _speed(10),
         _isRunning(true)
     {
 

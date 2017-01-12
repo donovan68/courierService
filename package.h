@@ -5,7 +5,18 @@
 
 class Package
 {
+    //Friend it to accecs status fields//
+    friend class PackageContainer;
 public:
+    Package(int sender, int recipent, double packageMass):
+        senderId(sender),
+        recipentId(recipent),
+        mass(packageMass),
+        _status(Announced)
+    {
+
+    }
+
     enum Status
     {
         Announced,
@@ -19,9 +30,15 @@ public:
         InDelivery,
         Completed
     };
-private:
+    Status GetStatus()
+    {
+        return _status;
+    }
+
     //Sender and recipent//
-    double _mass;
+    const int senderId, recipentId;
+    const double mass;
+private:
     Status _status;
 };
 class PackageContainer
@@ -51,6 +68,8 @@ public:
     }
 protected:
     std::vector<Package*> _packages;
+    unsigned int _workStart;
+    unsigned int _workEnd;
 };
 
 #endif // PACKAGE_H

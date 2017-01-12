@@ -12,3 +12,5 @@ vehicle.cpp
 assets.cpp
 drawing.cpp
 customer.cpp
+simtime.h
+simtime.cpp

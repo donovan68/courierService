@@ -1,5 +1,6 @@
 #include "simulation.h"
 
+
 using std::vector;
 
 void Simulation::Init()
@@ -19,6 +20,11 @@ void Simulation::Init()
 }
 void Simulation::Step()
 {
+    SimTime::Step(_speed);
+    for(vector<DrawableObject*>::iterator i = DrawableObject::objects.begin(); i < DrawableObject::objects.end(); ++i)
+    {
+        (*i)->Step();
+    }
 #ifdef USE_GRAPHICS
     if (_window == nullptr)
         throw std::logic_error("Init() not called");
@@ -31,7 +37,25 @@ void Simulation::Step()
     {
         (*i)->Draw();
     }
-
+//Display simulation time//
+    sf::Font font;
+    sf::Text time;
+    std::ostringstream oss;
+    time.setFont(font);
+    time.setCharacterSize(8);
+    time.setColor(sf::Color::Black);
+    if(!font.loadFromFile("arial-black.ttf"))
+    {
+        throw std::runtime_error("Cannot load text font arial-black.ttf");
+    }
+    oss.width(2);
+    oss.fill('0');
+    oss<< std::right << SimTime::Hour()<<":";
+    oss.width(2);
+    oss<<std::right<<SimTime::Minute();
+    time.setString(oss.str());
+    time.setPosition(sf::Vector2f(5.0,5.0));
+    _window->draw(time);
     _window->display();
 #endif
 

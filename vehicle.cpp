@@ -6,6 +6,8 @@ void Vehicle::Step()
 void Vehicle::Draw()
 {
 #ifdef USE_GRAPHICS
+    if(!_isRoute)
+        return;
     if(_window_s == nullptr)
         throw std::out_of_range("Cannot draw on null window");
     sf::RectangleShape shape(sf::Vector2f(5,3));

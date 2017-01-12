@@ -3,6 +3,8 @@
 
 #include "package.h"
 #include "drawing.h"
+#include "simtime.h"
+
 #include <random>
 #include <vector>
 
@@ -10,8 +12,11 @@ class Customer : public DrawableObject, public PackageContainer
 {
 public:
     Customer(Point origin, int branchId):
-        _branchId(branchId)
+        _branchId(branchId),
+        _id(_customers.size())
     {
+        _workStart = 8;
+        _workEnd = 22;
         int x, y;
         size_t radius;
         do
@@ -33,8 +38,11 @@ public:
     void Step();
 private:
     const int _branchId;
+    const int _id;
     static const size_t _minRadius = 60;
     static const size_t _maxRadius = 600;
+    static const int _dropRate = 1;//In promiles per hour
+    unsigned int _lastHour;
     static std::vector<Customer*> _customers;
 };
 
