@@ -11,9 +11,11 @@ class Vehicle : public DrawableObject , public PackageContainer
 {
 public:
     Vehicle():
+        _rotation(0),
         _speed(1),
         _capacity(300),
-        _isRoute(false)
+        _isRoute(false),
+        _asset(nullptr)
     {}
     Vehicle(int speed, int capacity):
         _speed(speed),
@@ -25,17 +27,23 @@ public:
     {
         return _isRoute;
     }
+    DrawableObject *CurrentAsset()
+    {
+        return _asset;
+    }
+
     void Step() = 0;
     void Draw();
     bool Move();
 
 protected:
 
-
+    double _rotation;
     int _speed;
     double _capacity;
     bool _isRoute;
     std::list<DrawableObject*> _route;
+    DrawableObject *_asset;
 };
 
 class VehicleContainer
@@ -73,9 +81,10 @@ public:
 class Truck : public Vehicle
 {
 public:
-    Truck()
+    Truck(Point startpos)
     {
-        _speed = 5;
+        _position = startpos;
+        _speed = 3;
         _capacity = 15000;
         _isRoute = false;
     }
@@ -90,24 +99,26 @@ public:
 class Van : public DistributionVehicle
 {
 public:
-    Van()
+    Van(Point startpos)
     {
-        _speed = 20;
+        _position = startpos;
+        _speed = 5;
         _capacity = 1000;
         _isRoute = false;
     }
-
+    void Draw();
 };
 class Scooter : public DistributionVehicle
 {
 public:
-    Scooter()
+    Scooter(Point startpos)
     {
-        _speed = 30;
+        _position = startpos;
+        _speed = 8;
         _capacity = 40;
         _isRoute = false;
     }
-
+    void Draw();
 };
 
 #endif // VEHICLE_H

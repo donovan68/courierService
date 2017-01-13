@@ -14,6 +14,58 @@ void Branch::Step()
         {
             if((*i)->Move())
             {
+                DrawableObject *where = (*i)->CurrentAsset();
+                if(where == nullptr)
+                    throw std::logic_error("Cannot resolve current asset");
+                Customer *customer = dynamic_cast<Customer*>(where);
+                Branch *branch = dynamic_cast<Branch*>(where);
+                Hub *hub = dynamic_cast<Hub*>(where);
+                if(customer!=nullptr)
+                {
+                    //Deliver and take packages//
+                    while(customer->PackageCount())
+                    {
+                        vector<Package*>::const_iterator p = customer->begin();
+                        while(p != customer->end())
+                        {
+                            Package *pack = customer->GetPackage(p);
+                            pack->SetStatus(Package::TransitToPickupBranch);
+                            (*i)->PutPackage(pack);
+                        }
+
+                    }
+                }
+                else if(branch != nullptr)
+                {
+                    //Put all packages to branch//
+                    vector<Package*>::const_iterator p = (*i)->begin();
+                    while(p != (*i)->end())
+                    {
+                        Package *pack = (*i)->GetPackage(p);
+                        //If recipent exists in database of current branch//
+                        bool branchCustomer = false;
+                        for(vector<Customer*>::iterator i = _customers.begin(); i != _customers.end(); ++i)
+                        {
+                            if((*i)->GetId() == pack->recipentId)
+                            {
+                                branchCustomer = true;
+                                break;
+                            }
+                        }
+                        if(branchCustomer)
+                            pack->SetStatus(Package::AwaitingDelivery);
+                        else
+                            pack->SetStatus(Package::TransitToHub);
+                        PutPackage(*p);
+
+                    }
+                }
+                else if(hub != nullptr)
+                {
+                    //Deliver packages to hub//
+                }
+                else
+                    throw std::logic_error("Unknown type");
 
             }
         }
@@ -27,16 +79,20 @@ void Branch::Step()
             distrroute.push_back(*i);
         }
     }
-    for(vector<Vehicle*>::iterator i = _vehicles.begin(); i != _vehicles.end(); ++i)
+    distrroute.push_back(this);
+    if(distrroute.size() > 1)
     {
-        if(!(*i)->isOnRoute())
+        for(vector<Vehicle*>::iterator i = _vehicles.begin(); i != _vehicles.end(); ++i)
         {
-            DistributionVehicle *distr = dynamic_cast<DistributionVehicle*>(*i);
-            if(distr != nullptr)
+            if(!(*i)->isOnRoute())
             {
-                distr->PlanRoute(distrroute);
-                distr->Distribute();
-                break;
+                DistributionVehicle *distr = dynamic_cast<DistributionVehicle*>(*i);
+                if(distr != nullptr)
+                {
+                    distr->PlanRoute(distrroute);
+                    distr->Distribute();
+                    break;
+                }
             }
         }
     }

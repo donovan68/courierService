@@ -41,6 +41,11 @@ public:
 
     void Draw();
     void Step();
+    int GetId()
+    {
+        return _id;
+    }
+
 private:
     const int _branchId;
     const int _id;

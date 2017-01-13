@@ -40,11 +40,11 @@ private:
         int trucks = count / 100;
         int motors = count / 30;
         for(int i = 0; i < vans; ++i)
-            _vehicles.push_back(new Van);
+            _vehicles.push_back(new Van(_position));
         for(int i = 0; i < trucks; ++i)
-            _vehicles.push_back(new Truck);
+            _vehicles.push_back(new Truck(_position));
         for(int i = 0; i < motors; ++i)
-            _vehicles.push_back(new Scooter);
+            _vehicles.push_back(new Scooter(_position));
     }
     const int _id;
 
