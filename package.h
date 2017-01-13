@@ -95,6 +95,7 @@ public:
         _packages.erase(i);
         return p;
     }
+    ConstIterator FindId(int customerId);
 
     ConstIterator begin()
     {

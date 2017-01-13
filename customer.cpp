@@ -41,7 +41,7 @@ void Customer::GenerateTask()
     _packages.push_back(package);
 }
 
-void Customer::Deliver(Package &p)
+void Customer::Deliver(Package *p)
 {
-    delete &p;
+    delete p;
 }

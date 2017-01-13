@@ -15,7 +15,7 @@ void Simulation::Init()
     DrawableObject::sizey = _sizey;
     //Generate Hub//
     _hub = new Hub;
-    _hub->GenerateMap(8, 20,60);
+    _hub->GenerateMap(8, 20,40);
 
 }
 void Simulation::Step()

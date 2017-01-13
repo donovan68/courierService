@@ -28,6 +28,7 @@ public:
 
 
 private:
+    Customer *FindCustomer(int id);
     void AddCustomers(size_t no)
     {
         for(size_t j =0; j < no; ++j)

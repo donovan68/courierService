@@ -74,7 +74,6 @@ public:
     {
         _isRoute = true;
     }
-
     void Step();
 };
 

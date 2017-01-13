@@ -39,7 +39,7 @@ bool Vehicle::Move()
         else
             offset.y = sizey + offset.y;
     }
-    double len =offset.length();
+    double len = offset.length();
 
     if(len < _speed)
     {
