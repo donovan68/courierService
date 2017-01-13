@@ -42,7 +42,7 @@ void Simulation::Step()
     sf::Text time;
     std::ostringstream oss;
     time.setFont(font);
-    time.setCharacterSize(8);
+    time.setCharacterSize(15);
     time.setColor(sf::Color::Black);
     if(!font.loadFromFile("arial-black.ttf"))
     {

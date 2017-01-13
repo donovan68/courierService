@@ -34,6 +34,11 @@ public:
 
     void GenerateTask();
     void Deliver(Package &p);
+    size_t PackageCount()
+    {
+        return _packages.size();
+    }
+
     void Draw();
     void Step();
 private:
@@ -41,7 +46,7 @@ private:
     const int _id;
     static const size_t _minRadius = 60;
     static const size_t _maxRadius = 600;
-    static const int _dropRate = 1;//In promiles per hour
+    static const int _dropRate = 10;//In promiles per hour
     unsigned int _lastHour;
     static std::vector<Customer*> _customers;
 };

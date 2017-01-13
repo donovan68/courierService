@@ -2,12 +2,14 @@
 #define ASSETS_H
 
 #include <random>
+#include <vector>
 #include "package.h"
 #include "vehicle.h"
 #include "drawing.h"
 #include "customer.h"
 #include "point.h"
 #include "simtime.h"
+
 
 class Branch : public DrawableObject, public PackageContainer, public VehicleContainer
 {
@@ -37,10 +39,15 @@ private:
         int vans = count / 15;
         int trucks = count / 100;
         int motors = count / 30;
-
-
+        for(int i = 0; i < vans; ++i)
+            _vehicles.push_back(new Van);
+        for(int i = 0; i < trucks; ++i)
+            _vehicles.push_back(new Truck);
+        for(int i = 0; i < motors; ++i)
+            _vehicles.push_back(new Scooter);
     }
     const int _id;
+
     std::vector<Customer*> _customers;
 };
 class Hub : public DrawableObject, public PackageContainer, public VehicleContainer

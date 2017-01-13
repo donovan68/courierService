@@ -14,7 +14,7 @@ public:
         _sizex(x),
         _sizey(y),
         _time(0),
-        _speed(10),
+        _speed(60),
         _isRunning(true)
     {
 

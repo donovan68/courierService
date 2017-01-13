@@ -66,6 +66,7 @@ public:
     {
         return _packages.end();
     }
+
 protected:
     std::vector<Package*> _packages;
     unsigned int _workStart;

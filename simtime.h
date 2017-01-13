@@ -21,7 +21,7 @@ public:
     }
     static unsigned int Minute()
     {
-        return _seconds % 60;
+        return (_seconds / 60) % 60;
     }
 
 private:

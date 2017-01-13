@@ -1,5 +1,6 @@
 #include "assets.h"
 
+using std::vector;
 void Hub::Step()
 {
 
@@ -7,7 +8,38 @@ void Hub::Step()
 
 void Branch::Step()
 {
+    for(vector<Vehicle*>::iterator i = _vehicles.begin(); i != _vehicles.end(); ++i)
+    {
+        if((*i)->isOnRoute())
+        {
+            if((*i)->Move())
+            {
 
+            }
+        }
+    }
+    vector<DrawableObject*> distrroute;
+    for(vector<Customer*>::iterator i = _customers.begin(); i != _customers.end(); ++i)
+    {
+
+        if((*i)->PackageCount() > 0)
+        {
+            distrroute.push_back(*i);
+        }
+    }
+    for(vector<Vehicle*>::iterator i = _vehicles.begin(); i != _vehicles.end(); ++i)
+    {
+        if(!(*i)->isOnRoute())
+        {
+            DistributionVehicle *distr = dynamic_cast<DistributionVehicle*>(*i);
+            if(distr != nullptr)
+            {
+                distr->PlanRoute(distrroute);
+                distr->Distribute();
+                break;
+            }
+        }
+    }
 }
 
 void Hub::Draw()

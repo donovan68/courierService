@@ -51,6 +51,11 @@ public:
             return true;
         return false;
     }
+    double length()
+    {
+        return sqrt(x * x + y * y);
+    }
+
     int x;
     int y;
 };

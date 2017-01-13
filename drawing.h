@@ -15,6 +15,11 @@ public:
         objects.push_back(this);
     }
 
+    Point GetPosition()
+    {
+        return _position;
+    }
+
     virtual void Draw() = 0;
     virtual void Step() = 0;
 #ifdef USE_GRAPHICS
