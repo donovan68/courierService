@@ -66,20 +66,65 @@ void Branch::Step()
                         if(branchCustomer)
                             pack->SetStatus(Package::AwaitingDelivery);
                         else
-                            pack->SetStatus(Package::TransitToHub);
+                            pack->SetStatus(Package::AwaitingHubTransport);
                         PutPackage(*p);
 
                     }
                 }
                 else if(hub != nullptr)
                 {
-                    //Deliver packages to hub//
+                    //Deliver packages to hub////TODO
+
                 }
                 else
                     throw std::logic_error("Unknown type");
 
             }
         }
+    }
+    //Plan Hub transport for Hub//
+    if(SimTime::Hour() == 15 && _hubSent == false)
+    {
+         vector<Package*> hubpack;
+         vector<Package*>::const_iterator htmp = _packages.begin();
+         while(htmp != _packages.end())
+         {
+             if((*htmp)->GetStatus() == Package::AwaitingHubTransport)
+             {
+                 hubpack.push_back(GetPackage(htmp));
+             }
+             else
+                 ++htmp;
+         }
+         if(hubpack.size() > 0)
+         {
+             //Find available truck//
+             for(vector<Vehicle*>::iterator i = _vehicles.begin(); i != _vehicles.end(); ++i)
+             {
+                 if(!(*i)->isOnRoute())
+                 {
+                     Truck *truck = dynamic_cast<Truck*>(*i);
+                     if(truck != nullptr)
+                     {
+                         vector<DrawableObject*> truckroute;
+                         truckroute.push_back(_hub);
+                         truckroute.push_back(this);
+                         //Transfer packages for transit into vehicle//
+                         while(hubpack.size()!=0)
+                         {
+                             hubpack.back()->SetStatus(Package::TransitToHub);
+                             truck->PutPackage(hubpack.back());
+                             hubpack.pop_back();
+                         }
+
+                         truck->PlanRoute(truckroute);
+                         truckroute.clear();
+                         truck->Transit();
+                     }
+                 }
+             }
+         }
+
     }
     //Plan pickup route for vehicles//
     vector<DrawableObject*> distrroute;

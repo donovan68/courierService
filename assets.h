@@ -15,8 +15,10 @@ class Branch : public DrawableObject, public PackageContainer, public VehicleCon
 {
     friend class Hub;
 public:
-    Branch(int id):
-        _id(id)
+    Branch(int id, DrawableObject *hub):\
+        _hub(hub),
+        _id(id),
+        _hubSent(false)
     {
         _workStart = 7;
         _workEnd = 16;
@@ -47,8 +49,9 @@ private:
         for(int i = 0; i < motors; ++i)
             _vehicles.push_back(new Scooter(_position));
     }
+    DrawableObject *_hub;
     const int _id;
-
+    bool _hubSent;
     std::vector<Customer*> _customers;
 };
 class Hub : public DrawableObject, public PackageContainer, public VehicleContainer
@@ -78,7 +81,7 @@ public:
             throw std::out_of_range("customers_max < customers_min");
         for(size_t i = 0; i < branches; ++i)
         {
-            _branches.push_back(new Branch(i));
+            _branches.push_back(new Branch(i,this));
             size_t customers_no = rand()% (customers_max - customers_min)+ customers_min;
             _branches.back()->AddCustomers(customers_no);
         }

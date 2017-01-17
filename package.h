@@ -12,7 +12,7 @@ public:
         mass(packageMass),
         _status(Announced)
     {
-
+        SetStatus(Announced);
     }
 
     enum Status
@@ -89,10 +89,10 @@ public:
         _packages.push_back(p);
     }
 
-    Package *GetPackage(ConstIterator i)
+    Package *GetPackage(ConstIterator &i)
     {
         Package *p = const_cast<Package *>(*i);
-        _packages.erase(i);
+        i = _packages.erase(i);
         return p;
     }
     ConstIterator FindId(int customerId);
