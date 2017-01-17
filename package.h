@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <iostream>
+#include <string>
 class Package
 {
 public:
@@ -32,46 +33,14 @@ public:
     {
         return _status;
     }
+	friend std::ostream& operator<<(std::ostream& os, const Package & p);
+	std::string GetStatusString()const;
     void SetStatus(Status status)
     {
         _status = status;
-        std::cout<< "Package from " << senderId <<" to " << recipentId << ". status changed to: ";
-        switch(_status)
-        {
-        case Announced:
-            std::cout<<"Announced";
-            break;
-        case InPickup:
-            std::cout<<"InPickup";
-            break;
-        case TransitToPickupBranch:
-            std::cout<<"TransitToPickupBranch";
-            break;
-        case AwaitingHubTransport:
-            std::cout<<"AwaitingHubTransport";
-            break;
-        case TransitToHub:
-            std::cout<<"TransitToHub";
-            break;
-        case AwaitingBranchTransport:
-            std::cout<<"AwaitingBranchTransport";
-            break;
-        case TransitToDestinationBranch:
-            std::cout<<"TransitToDestinationBranch";
-            break;
-        case AwaitingDelivery:
-            std::cout<<"AwaitingDelivery";
-            break;
-        case InDelivery:
-            std::cout<<"InDelivery";
-            break;
-        case Completed:
-            std::cout<<"Completed";
-            break;
-        default:
-            break;
-        }
-        std::cout<<"\r\n";
+        std::cout << "Package from " << senderId <<" to " << recipentId << ". status changed to: ";
+		std::cout << GetStatusString();
+        std::cout << "\r\n";
     }
     //Sender and recipent//
     const int senderId, recipentId;
@@ -79,20 +48,28 @@ public:
 private:
     Status _status;
 };
+
 class PackageContainer
 {
 public:
     using ConstIterator = std::vector<Package*>::const_iterator;
-
+	using Iterator = std::vector<Package*>::iterator;
     void PutPackage(Package *p)
     {
+		std::cout << "Loading: " << *p << "\r\n";
         _packages.push_back(p);
     }
 
     Package *GetPackage(ConstIterator &i)
     {
+		if (i == _packages.end())
+			throw std::out_of_range("Invalid iterator");
         Package *p = const_cast<Package *>(*i);
-        i = _packages.erase(i);
+		Iterator in = _packages.erase(i, i);
+		std::cout << "Removing: " << *p << " Packages  size: " << _packages.size() - 1<<"\r\n";
+        i = _packages.erase(in);
+		if (i != _packages.end())
+			std::cout << "Iterator points to: " << (*i)->recipentId << "\r\n";
         return p;
     }
     ConstIterator FindId(int customerId);
