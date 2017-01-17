@@ -43,5 +43,8 @@ void Customer::GenerateTask()
 
 void Customer::Deliver(Package *p)
 {
+	if (p == nullptr)
+		throw std::out_of_range("Cannot delete nullptr");
     delete p;
+	p = nullptr;
 }

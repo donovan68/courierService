@@ -48,6 +48,7 @@ void Branch::Step()
                 }
                 else if(branch != nullptr)
                 {
+					std::cout << "Arrived at branch\r\n";
                     //Put all packages to branch//
                     vector<Package*>::const_iterator p = (*i)->begin();
                     while(p != (*i)->end())
@@ -55,9 +56,9 @@ void Branch::Step()
                         Package *pack = (*i)->GetPackage(p);
                         //If recipent exists in database of current branch//
                         bool branchCustomer = false;
-                        for(vector<Customer*>::iterator i = _customers.begin(); i != _customers.end(); ++i)
+                        for(vector<Customer*>::iterator c = _customers.begin(); c != _customers.end(); ++c)
                         {
-                            if((*i)->GetId() == pack->recipentId)
+                            if((*c)->GetId() == pack->recipentId)
                             {
                                 branchCustomer = true;
                                 break;
@@ -67,8 +68,8 @@ void Branch::Step()
                             pack->SetStatus(Package::AwaitingDelivery);
                         else
                             pack->SetStatus(Package::TransitToHub);
-                        PutPackage(*p);
-
+                        
+						PutPackage(pack);
                     }
                 }
                 else if(hub != nullptr)
