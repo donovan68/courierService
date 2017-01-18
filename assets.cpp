@@ -5,7 +5,20 @@ void Hub::Step()
 {
 
 }
-
+void Hub::GetBranchPackages(std::vector<Package*> &packs, int branchid)
+{
+	vector<Package*>::const_iterator p = _packages.begin();
+	while (p != _packages.end())
+	{
+		if (Customer::GetBranchId((*p)->recipentId))
+		{
+			Package *pack = GetPackage(p);
+			packs.push_back(pack);
+		}
+		else
+			++p;
+	}
+}
 void Branch::Step()
 {
     for(vector<Vehicle*>::iterator i = _vehicles.begin(); i != _vehicles.end(); ++i)
@@ -74,8 +87,24 @@ void Branch::Step()
                 }
                 else if(hub != nullptr)
                 {
-                    //Deliver packages to hub////TODO
-
+                    //Deliver packages to hub//
+					vector<Package*>::const_iterator p = (*i)->begin();
+					while (p != (*i)->end())
+					{
+						Package *pack = (*i)->GetPackage(p);
+						pack->SetStatus(Package::AwaitingBranchTransport);
+						PutPackage(pack);
+					}
+					//Take all packages from the hub to the respective branch//
+					vector<Package*> branchpack;
+					hub->GetBranchPackages(branchpack, _id);
+					while (branchpack.size() != 0)
+					{
+						Package *pack = branchpack.back();
+						branchpack.pop_back();
+						pack->SetStatus(Package::TransitToDestinationBranch);
+						(*i)->PutPackage(pack);
+					}
                 }
                 else
                     throw std::logic_error("Unknown type");

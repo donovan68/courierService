@@ -15,10 +15,14 @@ void DistributionVehicle::Step()
 }
 void Truck::Step()
 {
-    if(_route.size() > 0)
-    {
-        //Move(*(_route.begin()));
-    }
+	if (_route.size() > 0)
+	{
+
+	}
+	else
+	{
+		_isRoute = false;
+	}
 }
 bool Vehicle::Move()
 {

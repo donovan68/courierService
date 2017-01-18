@@ -1,5 +1,6 @@
 #include "package.h"
 
+int Package::_totalCount = 0;
 PackageContainer::ConstIterator PackageContainer::FindId(int customerId)
 {
     ConstIterator i = begin();

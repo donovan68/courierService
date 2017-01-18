@@ -39,8 +39,8 @@ private:
         }
         //Also add vehicles according to the customer count//
         int count = _customers.size();
-        int vans = count / 15;
-        int trucks = count / 100;
+        int vans = count / 15 + 1;
+        int trucks = count / 100 + 1;
         int motors = count / 30;
         for(int i = 0; i < vans; ++i)
             _vehicles.push_back(new Van(_position));
@@ -86,6 +86,7 @@ public:
             _branches.back()->AddCustomers(customers_no);
         }
     }
+	void GetBranchPackages(std::vector<Package*> &packs, int branchid);
 
 private:
     std::vector<Branch*> _branches;

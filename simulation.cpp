@@ -53,6 +53,7 @@ void Simulation::Step()
     oss<< std::right << SimTime::Hour()<<":";
     oss.width(2);
     oss<<std::right<<SimTime::Minute();
+	oss << " Package count:" << Package::TotalCount();
     time.setString(oss.str());
     time.setPosition(sf::Vector2f(5.0,5.0));
     _window->draw(time);

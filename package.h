@@ -14,8 +14,12 @@ public:
         _status(Announced)
     {
         SetStatus(Announced);
+		++_totalCount;
     }
-
+	~Package()
+	{
+		--_totalCount;
+	}
     enum Status
     {
         Announced,
@@ -42,11 +46,16 @@ public:
 		std::cout << GetStatusString();
         std::cout << "\r\n";
     }
+	static int TotalCount()
+	{
+		return _totalCount;
+	}
     //Sender and recipent//
     const int senderId, recipentId;
     const double mass;
 private:
     Status _status;
+	static int _totalCount;
 };
 
 class PackageContainer

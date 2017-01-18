@@ -46,13 +46,19 @@ public:
     {
         return _id;
     }
+	static int GetBranchId(int customerId)
+	{
+		if (_customers.size() >= customerId)
+			throw std::out_of_range("Invalid Id");
+		return _customers.at(customerId)->_branchId;
+	}
     bool inService;
 private:
     const int _branchId;
     const int _id;
     static const size_t _minRadius = 60;
     static const size_t _maxRadius = 900;
-    static const int _dropRate = 109;//In promiles per hour
+    static const int _dropRate = 1;//In promiles per hour
     unsigned int _lastHour;
     static std::vector<Customer*> _customers;
 };
