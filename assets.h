@@ -27,7 +27,7 @@ public:
     }
     void Draw();
     void Step();
-
+	void Print();
 
 private:
     Customer *FindCustomer(int id);
@@ -87,7 +87,7 @@ public:
         }
     }
 	void GetBranchPackages(std::vector<Package*> &packs, int branchid);
-
+	void Print();
 private:
     std::vector<Branch*> _branches;
 };

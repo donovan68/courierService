@@ -81,6 +81,9 @@ void Simulation::Input()
                 break;
             case sf::Keyboard::E:
                 break;
+			case sf::Keyboard::G:
+				Customer::PackageGenerateToggle();
+				break;
 
             default:
                 break;

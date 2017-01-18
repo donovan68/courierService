@@ -14,12 +14,14 @@ public:
         _rotation(0),
         _speed(1),
         _capacity(300),
+		_currentLoad(0.0),
         _isRoute(false),
         _asset(nullptr)
     {}
     Vehicle(int speed, int capacity):
         _speed(speed),
         _capacity(capacity),
+		_currentLoad(0.0),
         _isRoute(false)
     {}
     void PlanRoute(std::vector<DrawableObject*> route);
@@ -31,7 +33,10 @@ public:
     {
         return _asset;
     }
-
+	//Override package load handlers to add capacity handling (exception thrown)//
+	void PutPackage(Package *pack);
+	Package *GetPackage(ConstIterator &i);
+	
     void Step() = 0;
     void Draw();
     bool Move();
@@ -41,6 +46,7 @@ protected:
     double _rotation;
     int _speed;
     double _capacity;
+	double _currentLoad;
     bool _isRoute;
     std::list<DrawableObject*> _route;
     DrawableObject *_asset;

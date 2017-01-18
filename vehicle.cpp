@@ -70,7 +70,19 @@ void Vehicle::PlanRoute(std::vector<DrawableObject*> route)
     for(vector<DrawableObject*>::iterator i = route.begin(); i != route.end(); ++i)
         _route.push_back(*i);
 }
-
+void Vehicle::PutPackage(Package *pack)
+{
+	if (_currentLoad + pack->mass > _capacity)
+		throw std::out_of_range("Vehicle full");
+	_currentLoad += pack->mass;
+	PackageContainer::PutPackage(pack);
+}
+Package * Vehicle::GetPackage(ConstIterator &i)
+{
+	Package *pack = PackageContainer::GetPackage(i);
+	_currentLoad -= pack->mass;
+	return pack;
+}
 void Vehicle::Draw()
 {
 #ifdef USE_GRAPHICS

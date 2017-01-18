@@ -10,7 +10,7 @@ void Hub::GetBranchPackages(std::vector<Package*> &packs, int branchid)
 	vector<Package*>::const_iterator p = _packages.begin();
 	while (p != _packages.end())
 	{
-		if (Customer::GetBranchId((*p)->recipentId))
+		if (Customer::GetBranchId((*p)->recipentId) == branchid)
 		{
 			Package *pack = GetPackage(p);
 			packs.push_back(pack);
@@ -62,7 +62,11 @@ void Branch::Step()
                 else if(branch != nullptr)
                 {
 					std::cout << "Arrived at branch\r\n";
-                    //Put all packages to branch//
+					if (dynamic_cast<Truck*>(*i) != nullptr)
+					{
+						_hubSent = false; 
+					}
+					//Put all packages to branch//
                     vector<Package*>::const_iterator p = (*i)->begin();
                     while(p != (*i)->end())
                     {
@@ -93,18 +97,20 @@ void Branch::Step()
 					{
 						Package *pack = (*i)->GetPackage(p);
 						pack->SetStatus(Package::AwaitingBranchTransport);
-						PutPackage(pack);
+						hub->PutPackage(pack); // Put to hub//
 					}
 					//Take all packages from the hub to the respective branch//
 					vector<Package*> branchpack;
-					hub->GetBranchPackages(branchpack, _id);
+					hub->GetBranchPackages(branchpack, _id); // Extract from hub//
 					while (branchpack.size() != 0)
 					{
 						Package *pack = branchpack.back();
 						branchpack.pop_back();
 						pack->SetStatus(Package::TransitToDestinationBranch);
-						(*i)->PutPackage(pack);
+						(*i)->PutPackage(pack);//Pyt back to truck//
 					}
+
+					hub->Print();
                 }
                 else
                     throw std::logic_error("Unknown type");
@@ -115,6 +121,8 @@ void Branch::Step()
     //Plan Hub transport for Hub//
     if(SimTime::Hour() == 15 && _hubSent == false)
     {
+		Print();
+		_hubSent = true;
          vector<Package*> hubpack;
          vector<Package*>::const_iterator htmp = _packages.begin();
          while(htmp != _packages.end())
@@ -126,7 +134,7 @@ void Branch::Step()
              else
                  ++htmp;
          }
-         if(hubpack.size() > 0)
+         if(true)
          {
              //Find available truck//
              for(vector<Vehicle*>::iterator i = _vehicles.begin(); i != _vehicles.end(); ++i)
@@ -157,7 +165,7 @@ void Branch::Step()
 
     }
     //Plan pickup route for vehicles//
-    vector<DrawableObject*> distrroute;
+    vector<DrawableObject*> pickuproute;
     for(vector<Customer*>::iterator i = _customers.begin(); i != _customers.end(); ++i)
     {
         if((*i)->PackageCount() > 0 && (*i)->inService == false)
@@ -212,7 +220,15 @@ void Branch::Step()
                         while(tmppack.size()!=0)
                         {
                             tmppack.back()->SetStatus(Package::InDelivery);
-                            distr->PutPackage(tmppack.back());
+							try
+							{
+								distr->PutPackage(tmppack.back());
+							}
+							catch (std::out_of_range &e)
+							{
+								//Vehicle full//
+								break;
+							}
                             tmppack.pop_back();
                         }
                         //Mark customers as in service//
@@ -244,6 +260,16 @@ void Branch::Step()
     }
     //If no customer can be handled unmark them from used//
 
+}
+void Branch::Print()
+{
+	std::cout << "Branch no: " << _id << "\r\n";
+	PackageContainer::Print();
+}
+void Hub::Print()
+{
+	std::cout << "Hub: " << "\r\n";
+	PackageContainer::Print();
 }
 Customer *Branch::FindCustomer(int id)
 {

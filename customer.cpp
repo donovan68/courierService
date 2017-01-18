@@ -1,7 +1,7 @@
 #include "customer.h"
 
 std::vector<Customer*> Customer::_customers;
-
+bool Customer::_generatePackages = false;
 void Customer::Draw()
 {
 #ifdef USE_GRAPHICS
@@ -31,7 +31,9 @@ void Customer::Step()
 
 void Customer::GenerateTask()
 {
-    int rid, mass;
+	if (!_generatePackages)
+		return;
+	int rid, mass;
     do
     {
         rid = rand() % _customers.size();

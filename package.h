@@ -65,7 +65,7 @@ public:
 	using Iterator = std::vector<Package*>::iterator;
     void PutPackage(Package *p)
     {
-		std::cout << "Loading: " << *p << "\r\n";
+		//std::cout << "Loading: " << *p << "\r\n";
         _packages.push_back(p);
     }
 
@@ -75,12 +75,13 @@ public:
 			throw std::out_of_range("Invalid iterator");
         Package *p = const_cast<Package *>(*i);
 		Iterator in = _packages.erase(i, i);
-		std::cout << "Removing: " << *p << " Packages  size: " << _packages.size() - 1<<"\r\n";
+		//std::cout << "Removing: " << *p << " Packages  size: " << _packages.size() - 1<<"\r\n";
         i = _packages.erase(in);
-		if (i != _packages.end())
-			std::cout << "Iterator points to: " << (*i)->recipentId << "\r\n";
+		//if (i != _packages.end())
+		//	std::cout << "Iterator points to: " << (*i)->recipentId << "\r\n";
         return p;
     }
+	double GetWeight();
     ConstIterator FindId(int customerId);
 
     ConstIterator begin()
@@ -91,6 +92,7 @@ public:
     {
         return _packages.end();
     }
+	void Print();
 
 protected:
     std::vector<Package*> _packages;

@@ -60,3 +60,19 @@ std::string Package::GetStatusString() const
 	}
 	return "";
 }
+void PackageContainer::Print()
+{
+	for (ConstIterator i = begin(); i != end(); ++i)
+	{
+		std::cout << *(*i) << "\r\n";
+	}
+}
+double PackageContainer::GetWeight()
+{
+	double m = 0.0;
+	for (ConstIterator i = begin(); i != end(); ++i)
+	{
+		m += (*i)->mass;
+	}
+	return m;
+}

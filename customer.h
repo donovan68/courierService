@@ -48,9 +48,13 @@ public:
     }
 	static int GetBranchId(int customerId)
 	{
-		if (_customers.size() >= customerId)
+		if (_customers.size() < customerId)
 			throw std::out_of_range("Invalid Id");
 		return _customers.at(customerId)->_branchId;
+	}
+	static void PackageGenerateToggle()
+	{
+		_generatePackages = !_generatePackages;
 	}
     bool inService;
 private:
@@ -58,9 +62,10 @@ private:
     const int _id;
     static const size_t _minRadius = 60;
     static const size_t _maxRadius = 900;
-    static const int _dropRate = 1;//In promiles per hour
+	static const int _dropRate = 104;//in promiles per hour
     unsigned int _lastHour;
     static std::vector<Customer*> _customers;
+	static bool _generatePackages;
 };
 
 #endif // CUSTOMER_H
