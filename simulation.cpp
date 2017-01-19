@@ -1,13 +1,12 @@
 #include "simulation.h"
 
-
 using std::vector;
 
 void Simulation::Init()
 {
 #ifdef USE_GRAPHICS
     _window = new sf::RenderWindow(sf::VideoMode(_sizex, _sizey), "DHL");
-    _window->setFramerateLimit(30);
+    //_window->setFramerateLimit(30);
     DrawableObject::_window_s = _window;
 #endif
     //Set map size//
@@ -15,16 +14,19 @@ void Simulation::Init()
     DrawableObject::sizey = _sizey;
     //Generate Hub//
     _hub = new Hub;
-    _hub->GenerateMap(8, 20,40);
-
+    _hub->GenerateMap(25, 40,150);
+	std::cout << "Initialization complete\r\n";
 }
 void Simulation::Step()
 {
-    SimTime::Step(_speed);
-    for(vector<DrawableObject*>::iterator i = DrawableObject::objects.begin(); i < DrawableObject::objects.end(); ++i)
-    {
-        (*i)->Step();
-    }
+	if(!_pause)
+	{
+		SimTime::Step(_speed);
+		for (vector<DrawableObject*>::iterator i = DrawableObject::objects.begin(); i < DrawableObject::objects.end(); ++i)
+		{
+			(*i)->Step();
+		}
+	}
 #ifdef USE_GRAPHICS
     if (_window == nullptr)
         throw std::logic_error("Init() not called");
@@ -78,13 +80,18 @@ void Simulation::Input()
             switch (event.key.code)
             {
             case sf::Keyboard::R:
+				//Report//
+				_hub->Print();
                 break;
             case sf::Keyboard::E:
+				Package::reportStatus = !Package::reportStatus;
                 break;
 			case sf::Keyboard::G:
 				Customer::PackageGenerateToggle();
 				break;
-
+			case sf::Keyboard::S:
+				_pause= !_pause;
+				break;
             default:
                 break;
 

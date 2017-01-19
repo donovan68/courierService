@@ -1,5 +1,4 @@
 #include "assets.h"
-
 using std::vector;
 void Hub::Step()
 {
@@ -35,33 +34,48 @@ void Branch::Step()
                 Hub *hub = dynamic_cast<Hub*>(where);
                 if(customer!=nullptr)
                 {
+					//Deliver packages//
+					PackageContainer::ConstIterator it = (*i)->FindId(customer->GetId());
+					while (it != (*i)->end())
+					{
+						Package *pack = (*i)->GetPackage(it);
+						pack->SetStatus(Package::Completed);
+						customer->Deliver(pack);
+						it = (*i)->FindId(customer->GetId());
+					}
                     //Take packages//
+					bool full = false;
                     while(customer->PackageCount())
                     {
                         vector<Package*>::const_iterator p = customer->begin();
-                        while(p != customer->end())
-                        {
-                            Package *pack = customer->GetPackage(p);
-                            pack->SetStatus(Package::TransitToPickupBranch);
-                            (*i)->PutPackage(pack);
-                        }
+						while (p != customer->end())
+						{
+							Package *pack = customer->GetPackage(p);
+							pack->SetStatus(Package::TransitToPickupBranch);
+							try
+							{
+								(*i)->PutPackage(pack);
+							}
+							catch (std::out_of_range)
+							{
+								//We end up here if the vehicle is full//
+								pack->SetStatus(Package::Announced);
+								customer->PutPackage(pack);
+								//std::cout << "Vehicle full\r\n";
+								full = true;
+								break;
+							}
 
-                    }
-                    //Deliver packages//
-                    PackageContainer::ConstIterator it = (*i)->FindId(customer->GetId());
-                    while(it != (*i)->end())
-                    {
-                        Package *pack = (*i)->GetPackage(it);
-                        pack->SetStatus(Package::Completed);
-                        customer->Deliver(pack);
-                        it = (*i)->FindId(customer->GetId());
+                        }
+						if (full)
+							break;
                     }
                     //Mark as not in service//
                     customer->inService = false;
                 }
                 else if(branch != nullptr)
                 {
-					std::cout << "Arrived at branch\r\n";
+					//std::cout << "Arrived at branch\r\n";
 					if (dynamic_cast<Truck*>(*i) != nullptr)
 					{
 						_hubSent = false; 
@@ -105,12 +119,28 @@ void Branch::Step()
 					while (branchpack.size() != 0)
 					{
 						Package *pack = branchpack.back();
-						branchpack.pop_back();
 						pack->SetStatus(Package::TransitToDestinationBranch);
-						(*i)->PutPackage(pack);//Pyt back to truck//
+						try
+						{
+							(*i)->PutPackage(pack);//Put back to truck//
+						}
+						catch (std::out_of_range)
+						{
+							pack->SetStatus(Package::AwaitingBranchTransport);
+							std::cout << "Truck full (branch)\r\n";
+							break;
+						}
+						branchpack.pop_back();
 					}
-
-					hub->Print();
+					//If any packages left//
+					if (branchpack.size() != 0)
+					{
+						for (vector<Package*>::const_iterator pit = branchpack.begin(); pit < branchpack.end(); ++pit)
+						{
+							hub->PutPackage(*pit);
+						}
+						branchpack.clear();
+					}
                 }
                 else
                     throw std::logic_error("Unknown type");
@@ -118,13 +148,16 @@ void Branch::Step()
             }
         }
     }
+	//Check for working hours//
+	if (SimTime::Hour() > _workEnd || SimTime::Hour() < _workStart)
+		return;
     //Plan Hub transport for Hub//
-    if(SimTime::Hour() == 15 && _hubSent == false)
+    if((SimTime::Hour() == 9 || SimTime::Hour() == 15) && _hubSent == false)
     {
-		Print();
 		_hubSent = true;
          vector<Package*> hubpack;
          vector<Package*>::const_iterator htmp = _packages.begin();
+		 //Load packages into temporary inventory//
          while(htmp != _packages.end())
          {
              if((*htmp)->GetStatus() == Package::AwaitingHubTransport)
@@ -151,7 +184,16 @@ void Branch::Step()
                          while(hubpack.size()!=0)
                          {
                              hubpack.back()->SetStatus(Package::TransitToHub);
-                             truck->PutPackage(hubpack.back());
+							 try
+							 { 
+								 truck->PutPackage(hubpack.back());
+							 }
+							 catch (std::out_of_range)
+							 {
+								 hubpack.back()->SetStatus(Package::AwaitingHubTransport);
+								 std::cout << "Truck full (branch)\r\n";
+								 break;
+							 }
                              hubpack.pop_back();
                          }
 
@@ -163,88 +205,111 @@ void Branch::Step()
              }
          }
 
+		 //Return unused packages to storage//
+		 if (hubpack.size() != 0)
+		 {
+			 for (vector<Package*>::const_iterator pit = hubpack.begin(); pit < hubpack.end(); ++pit)
+			 {
+				 PutPackage(*pit);
+			 }
+			 hubpack.clear();
+		 }
     }
     //Plan pickup route for vehicles//
-    vector<DrawableObject*> pickuproute;
+	vector<DrawableObject*> pickuproute;
     for(vector<Customer*>::iterator i = _customers.begin(); i != _customers.end(); ++i)
     {
         if((*i)->PackageCount() > 0 && (*i)->inService == false)
         {
-            distrroute.push_back(*i);
+            pickuproute.push_back(*i);
         }
     }
     vector<Package*> tmppack;
     vector<Package*>::const_iterator ptmp = _packages.begin();
+	//Plan delivery route for vehicles and store packages in the buffer//
     while(ptmp != _packages.end())
     {
         if((*ptmp)->GetStatus() == Package::AwaitingDelivery)
         {
             tmppack.push_back(GetPackage(ptmp));
-            //Add appropriate customer to route//
-            Customer *cust = FindCustomer(tmppack.back()->recipentId);
-            {
-                 if(cust == nullptr)
-                    throw std::logic_error("No such customer");
-                 //Check if he is already in route we are travelling//
-                 bool exists = false;
-                 for(vector<DrawableObject*>::iterator tmpit = distrroute.begin(); tmpit != distrroute.end(); ++tmpit)
-                 {
-                     if(dynamic_cast<Customer*>(*tmpit) == cust)
-                     {
-                         exists = true;
-                         break;
-                     }
-                 }
-                 if(!exists)
-                    distrroute.push_back(cust);
-            }
         }
         else
             ++ptmp;
     }
     //Check if we need to go anywhere with distribution vehicle//
-    if(distrroute.size() > 0)
+    if(tmppack.size() > 0 || pickuproute.size() > 0)
     {
-        distrroute.push_back(this);
+		//Iterate available vehicles//
         for(vector<Vehicle*>::iterator i = _vehicles.begin(); i != _vehicles.end(); ++i)
         {
+			//If available (not on route to customers)//
             if(!(*i)->isOnRoute())
             {
                 DistributionVehicle *distr = dynamic_cast<DistributionVehicle*>(*i);
                 if(distr != nullptr)
                 {
-                    //One can add looking for most suitable vehicle//
-                    if(distrroute.size() > 0)
-                    {
-                        //Transfer packages for distribution into vehicle//
-                        while(tmppack.size()!=0)
-                        {
-                            tmppack.back()->SetStatus(Package::InDelivery);
-							try
+					if (tmppack.size() == 0 && pickuproute.size() == 0)
+						break;
+					//First try to exhaust all pickup options//
+					vector<DrawableObject*> vehroute;
+					double capacity_used = 0.0;
+					while (pickuproute.size() > 0)
+					{
+						double packweight = dynamic_cast<Customer*>(pickuproute.back())->GetWeight();
+						if (capacity_used + packweight > distr->Capacity())
+						{
+							//Cannot plan more on this route//
+							break;
+						}
+						vehroute.push_back(pickuproute.back());
+						pickuproute.pop_back();
+						capacity_used += packweight;
+					}
+					//Try to exhaust all delivery options//
+					while (tmppack.size() > 0)
+					{
+						//Verify mass constraint//
+						if (capacity_used + tmppack.back()->mass > distr->Capacity())
+						{
+							//Cannot plan more on this route//
+							break;
+						}
+						//Find respective customer//
+						Customer *cust = FindCustomer(tmppack.back()->recipentId);
+						//Check route for duplicate//
+						if (cust == nullptr)
+							throw std::logic_error("No such customer");
+						//Check if he is already in delivery route we are planning//
+						bool exists = false;
+						for (vector<DrawableObject*>::iterator tmpit = vehroute.begin(); tmpit != vehroute.end(); ++tmpit)
+						{
+							if (dynamic_cast<Customer*>(*tmpit) == cust)
 							{
-								distr->PutPackage(tmppack.back());
-							}
-							catch (std::out_of_range &e)
-							{
-								//Vehicle full//
+								exists = true;
 								break;
 							}
-                            tmppack.pop_back();
-                        }
-                        //Mark customers as in service//
-                        for(vector<DrawableObject*>::iterator tmpit = distrroute.begin(); tmpit != distrroute.end(); ++tmpit)
-                        {
-                            Customer *tmpcust = dynamic_cast<Customer*>(*tmpit);
-                            if(tmpcust != nullptr)
-                            {
-                                tmpcust->inService = true;
-                            }
-                        }
-                        distr->PlanRoute(distrroute);
-                        distr->Distribute();
-                        distrroute.clear();
-                        break;
-                    }
+						}
+						if (!exists)
+							vehroute.push_back(cust);
+						//Load vehicle//
+						capacity_used += tmppack.back()->mass;
+						tmppack.back()->SetStatus(Package::InDelivery);
+						distr->PutPackage(tmppack.back());
+						tmppack.pop_back();
+					}
+					//Mark customers as in service//
+					for (vector<DrawableObject*>::iterator tmpit = vehroute.begin(); tmpit != vehroute.end(); ++tmpit)
+					{
+						Customer *tmpcust = dynamic_cast<Customer*>(*tmpit);
+						if (tmpcust != nullptr)
+						{
+							tmpcust->inService = true;
+						}
+					}
+					vehroute.push_back(this);
+                    distr->PlanRoute(vehroute);
+                    distr->Distribute();
+                    vehroute.clear();
                 }
             }
         }
@@ -258,7 +323,6 @@ void Branch::Step()
         }
         tmppack.clear();
     }
-    //If no customer can be handled unmark them from used//
 
 }
 void Branch::Print()
@@ -270,6 +334,10 @@ void Hub::Print()
 {
 	std::cout << "Hub: " << "\r\n";
 	PackageContainer::Print();
+	for (std::vector<Branch*>::iterator i = _branches.begin(); i != _branches.end(); ++i)
+	{
+		(*i)->Print();
+	}
 }
 Customer *Branch::FindCustomer(int id)
 {

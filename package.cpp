@@ -1,6 +1,7 @@
 #include "package.h"
 
 int Package::_totalCount = 0;
+bool Package::reportStatus = false;
 PackageContainer::ConstIterator PackageContainer::FindId(int customerId)
 {
     ConstIterator i = begin();
@@ -8,7 +9,6 @@ PackageContainer::ConstIterator PackageContainer::FindId(int customerId)
     {
         if((*i)->recipentId == customerId)
         {
-			std::cout << "Found:" << customerId << "\r\n";
             return i;
         }
         ++i;
@@ -62,6 +62,7 @@ std::string Package::GetStatusString() const
 }
 void PackageContainer::Print()
 {
+	std::cout << "Size: " << _packages.size() << "\r\n";
 	for (ConstIterator i = begin(); i != end(); ++i)
 	{
 		std::cout << *(*i) << "\r\n";

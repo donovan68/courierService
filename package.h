@@ -4,6 +4,7 @@
 #include <vector>
 #include <iostream>
 #include <string>
+
 class Package
 {
 public:
@@ -42,9 +43,12 @@ public:
     void SetStatus(Status status)
     {
         _status = status;
-        std::cout << "Package from " << senderId <<" to " << recipentId << ". status changed to: ";
-		std::cout << GetStatusString();
-        std::cout << "\r\n";
+		if(reportStatus)
+		{ 
+			std::cout << "Package from " << senderId <<" to " << recipentId << ". status changed to: ";
+			std::cout << GetStatusString();
+        	std::cout << "\r\n";
+		}
     }
 	static int TotalCount()
 	{
@@ -53,6 +57,7 @@ public:
     //Sender and recipent//
     const int senderId, recipentId;
     const double mass;
+	static bool reportStatus;
 private:
     Status _status;
 	static int _totalCount;

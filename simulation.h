@@ -15,7 +15,8 @@ public:
         _sizey(y),
         _time(0),
         _speed(60),
-        _isRunning(true)
+        _isRunning(true),
+		_pause(false)
     {
 
     }
@@ -33,6 +34,7 @@ private:
     unsigned long _time;
     unsigned int _speed;
     bool _isRunning;
+	bool _pause;
 #ifdef USE_GRAPHICS
     sf::RenderWindow *_window;
 #endif

@@ -61,8 +61,8 @@ private:
     const int _branchId;
     const int _id;
     static const size_t _minRadius = 60;
-    static const size_t _maxRadius = 900;
-	static const int _dropRate = 104;//in promiles per hour
+    static const size_t _maxRadius = 1200;
+	static const int _dropRate = 50;//in promiles per hour
     unsigned int _lastHour;
     static std::vector<Customer*> _customers;
 	static bool _generatePackages;

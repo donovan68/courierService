@@ -36,6 +36,10 @@ public:
 	//Override package load handlers to add capacity handling (exception thrown)//
 	void PutPackage(Package *pack);
 	Package *GetPackage(ConstIterator &i);
+	double Capacity()
+	{
+		return _capacity;
+	}
 	
     void Step() = 0;
     void Draw();
@@ -108,7 +112,7 @@ public:
     {
         _position = startpos;
         _speed = 5;
-        _capacity = 1000;
+        _capacity = 300;
         _isRoute = false;
     }
     void Draw();

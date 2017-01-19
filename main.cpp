@@ -1,7 +1,6 @@
 #include <iostream>
 #include <random>
 #include "simulation.h"
-
 using namespace std;
 
 int main(int argc, char *argv[])
